@@ -1,9 +1,15 @@
 from google import genai
 import json
 import re
+import os
+from dotenv import load_dotenv
 
 # 🔑 API KEY
-client = genai.Client(api_key="AIzaSyB5z1HtvAAm3Zdc41VV9dQCS1RQsvAtnBs")
+load_dotenv()
+
+client = genai.Client(
+    api_key=os.getenv("GEMINI_API_KEY")
+)
 
 def generate_summary(text, prediction):
     prompt = f"""

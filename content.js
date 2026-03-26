@@ -194,86 +194,6 @@ style.innerHTML = `
     opacity: 1;
   }
 }
-
-@keyframes tlShimmer {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
-}
-
-@keyframes tlSpin {
-  to { transform: rotate(360deg); }
-}
-
-@keyframes tlPulse {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 1; }
-}
-
-.truthlens-loading-body {
-  padding: 16px 16px 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.truthlens-spinner {
-  width: 18px;
-  height: 18px;
-  border: 2px solid rgba(255,255,255,0.08);
-  border-top-color: #7c3aed;
-  border-radius: 50%;
-  animation: tlSpin 0.7s linear infinite;
-  margin-bottom: 2px;
-}
-
-.truthlens-loading-label {
-  font-size: 11px;
-  color: rgba(255,255,255,0.35);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  animation: tlPulse 1.5s ease-in-out infinite;
-}
-
-.truthlens-skeleton {
-  height: 10px;
-  border-radius: 6px;
-  background: linear-gradient(
-    90deg,
-    rgba(255,255,255,0.05) 25%,
-    rgba(255,255,255,0.1) 50%,
-    rgba(255,255,255,0.05) 75%
-  );
-  background-size: 200% 100%;
-  animation: tlShimmer 1.4s ease-in-out infinite;
-}
-
-.truthlens-verdict-loading {
-  padding: 16px 16px 14px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-}
-
-.truthlens-badge-skeleton {
-  width: 72px;
-  height: 28px;
-  border-radius: 8px;
-  background: linear-gradient(
-    90deg,
-    rgba(255,255,255,0.05) 25%,
-    rgba(255,255,255,0.09) 50%,
-    rgba(255,255,255,0.05) 75%
-  );
-  background-size: 200% 100%;
-  animation: tlShimmer 1.4s ease-in-out infinite;
-}
-
-.truthlens-content-fade-in {
-  animation: tlFadeIn 0.35s ease forwards;
-}
-
-@keyframes tlFadeIn {
-  from { opacity: 0; transform: translateY(4px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
 `;
 
 document.head.appendChild(style);
@@ -281,16 +201,13 @@ document.head.appendChild(style);
 // ==========================
 // SELECT TEXT → ANALYZE
 // ==========================
-document.addEventListener("mouseup", async (e) => {
+document.addEventListener("mouseup", async () => {
   console.log("🟢 Mouse event triggered");
 
   const selectedText = window.getSelection().toString().trim();
   console.log("Selected:", selectedText);
 
   if (selectedText.length > 10) {  // ✅ FIXED
-    // Show loading popup immediately, positioned near the selection
-    const popup = showLoadingPopup(e);
-
     try {
       console.log("📡 Calling API...");
 
@@ -306,53 +223,29 @@ document.addEventListener("mouseup", async (e) => {
 
       console.log("✅ FULL API RESPONSE:", data);
 
-      // ✅ FIXED: correct call — replace loading with result
-      populatePopup(popup, data);
+      // ✅ FIXED: correct call
+      showPopup(data);
 
       highlightSentences(data.sentences);
 
     } catch (err) {
       console.error("❌ API error:", err);
-      popup.remove();
     }
   }
 });
 
 // ==========================
-// SHARED POPUP SHELL
+// POPUP RESULT (FINAL UI)
 // ==========================
-function createPopupShell(e) {
-  // Remove any existing popup
-  document.querySelectorAll(".truthlens-popup").forEach(el => el.remove());
-
+function showPopup(data) {
   const popup = document.createElement("div");
   popup.className = "truthlens-popup";
 
-  // Try to position near the selection, fall back to top-right
-  const sel = window.getSelection();
-  if (sel && sel.rangeCount > 0) {
-    const rect = sel.getRangeAt(0).getBoundingClientRect();
-    const popupWidth = 300;
-    const margin = 12;
-
-    let left = rect.right + margin;
-    let top = rect.top + window.scrollY;
-
-    // Flip left if too close to right edge
-    if (left + popupWidth > window.innerWidth - margin) {
-      left = rect.left - popupWidth - margin;
-    }
-
-    // Clamp to viewport
-    left = Math.max(margin, Math.min(left, window.innerWidth - popupWidth - margin));
-    top = Math.max(margin + window.scrollY, top);
-
-    popup.style.position = "absolute";
-    popup.style.top = `${top}px`;
-    popup.style.left = `${left}px`;
-    popup.style.right = "auto";
-  }
-  // (else: CSS default — fixed top-right via .truthlens-popup styles)
+  const isReal = data.overall.label === "REAL";
+  const confidenceRaw = data.overall.confidence;
+  const confidencePct = typeof confidenceRaw === "number"
+    ? Math.round(confidenceRaw * 100)
+    : parseInt(confidenceRaw) || 0;
 
   popup.innerHTML = `
     <div class="truthlens-header">
@@ -362,62 +255,18 @@ function createPopupShell(e) {
       </div>
       <span class="truthlens-close">✕</span>
     </div>
-    <div class="truthlens-popup-content"></div>
-  `;
 
-  document.body.appendChild(popup);
-  popup.querySelector(".truthlens-close").onclick = () => popup.remove();
-
-  return popup;
-}
-
-// ==========================
-// LOADING STATE
-// ==========================
-function showLoadingPopup(e) {
-  const popup = createPopupShell(e);
-  const content = popup.querySelector(".truthlens-popup-content");
-
-  content.innerHTML = `
-    <div class="truthlens-verdict-loading">
-      <div class="truthlens-badge-skeleton"></div>
-    </div>
-    <div class="truthlens-loading-body">
-      <div class="truthlens-spinner"></div>
-      <span class="truthlens-loading-label">Analyzing...</span>
-      <div class="truthlens-skeleton" style="width: 100%;"></div>
-      <div class="truthlens-skeleton" style="width: 80%;"></div>
-      <div class="truthlens-skeleton" style="width: 60%;"></div>
-    </div>
-  `;
-
-  return popup;
-}
-
-// ==========================
-// POPULATE WITH RESULT
-// ==========================
-function populatePopup(popup, data) {
-  const isReal = data.overall.label === "REAL";
-  const confidenceRaw = data.overall.confidence;
-  const confidencePct = typeof confidenceRaw === "number"
-    ? Math.round(confidenceRaw * 100)
-    : parseInt(confidenceRaw) || 0;
-
-  const content = popup.querySelector(".truthlens-popup-content");
-
-  content.innerHTML = `
-    <div class="truthlens-verdict truthlens-content-fade-in">
+    <div class="truthlens-verdict">
       <div class="truthlens-badge ${isReal ? "real" : "fake"}">
         ${data.overall.label}
       </div>
     </div>
 
-    <div class="truthlens-body truthlens-content-fade-in" style="animation-delay: 0.05s;">
+    <div class="truthlens-body">
       ${data.summary?.verdict_reason || "No explanation available"}
     </div>
 
-    <div class="truthlens-footer truthlens-content-fade-in" style="animation-delay: 0.1s;">
+    <div class="truthlens-footer">
       <span class="truthlens-footer-label">Confidence</span>
       <div class="truthlens-confidence-bar">
         <div class="truthlens-confidence-fill" style="width: ${confidencePct}%"></div>
@@ -426,15 +275,11 @@ function populatePopup(popup, data) {
     </div>
   `;
 
-  setTimeout(() => popup.remove(), 8000);
-}
+  document.body.appendChild(popup);
 
-// ==========================
-// POPUP RESULT (FINAL UI)
-// ==========================
-function showPopup(data) {
-  const popup = createPopupShell(null);
-  populatePopup(popup, data);
+  popup.querySelector(".truthlens-close").onclick = () => popup.remove();
+
+  setTimeout(() => popup.remove(), 8000);
 }
 
 // ==========================
