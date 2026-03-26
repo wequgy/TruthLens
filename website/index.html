@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TruthLens — AI-Powered Fact Detection</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="nav-logo">TruthLens <span class="logo-dot">🔍</span></div>
+      <div class="nav-links">
+        <a href="#demo">Demo</a>
+        <a href="#how">How it works</a>
+        <a href="#download" class="nav-cta">Get Extension</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg">
+      <div class="orb orb1"></div>
+      <div class="orb orb2"></div>
+      <div class="orb orb3"></div>
+      <div class="grid-lines"></div>
+    </div>
+    <div class="hero-inner">
+      <div class="badge">
+        <span class="badge-dot"></span>
+        AI-Powered Credibility Analysis
+      </div>
+      <h1 class="hero-title">
+        See through the<br/>
+        <span class="gradient-text">noise.</span>
+      </h1>
+      <p class="hero-sub">
+        TruthLens analyzes any text in real-time — classifying content as real or fake, highlighting misleading sentences, and explaining why.
+      </p>
+      <div class="hero-actions">
+        <a href="#demo" class="btn-primary">
+          <span>Try Demo</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a href="#download" class="btn-secondary">Download Extension</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><span class="stat-num">98%</span><span class="stat-label">Accuracy</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat"><span class="stat-num">&lt;1s</span><span class="stat-label">Response time</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat"><span class="stat-num">AI</span><span class="stat-label">Powered</span></div>
+      </div>
+    </div>
+    <div class="hero-mockup">
+      <div class="mockup-card">
+        <div class="mockup-header">
+          <div class="mockup-dots"><span></span><span></span><span></span></div>
+          <div class="mockup-title">Analysis Result</div>
+        </div>
+        <div class="mockup-body">
+          <div class="mockup-label fake">FAKE</div>
+          <div class="mockup-confidence">
+            <span>Confidence</span>
+            <div class="mockup-bar"><div class="mockup-bar-fill" style="width:87%"></div></div>
+            <span class="conf-num">87%</span>
+          </div>
+          <div class="mockup-sentences">
+            <div class="sent fake-sent">Scientists reveal shocking secret cure!!!</div>
+            <div class="sent real-sent">Clinical trials remain ongoing as of 2024.</div>
+            <div class="sent fake-sent">Government hiding the TRUTH about this discovery</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how" id="how">
+    <div class="container">
+      <div class="section-label">How it works</div>
+      <h2 class="section-title">Three steps to clarity</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">01</div>
+          <div class="step-icon">✍️</div>
+          <h3>Paste or Select</h3>
+          <p>Paste any article, tweet, or message — or simply select text on any webpage with the extension active.</p>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <div class="step-icon">🧠</div>
+          <h3>AI Analysis</h3>
+          <p>Our SentenceTransformer + LinearSVC model embeds and classifies the content with sentence-level granularity.</p>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <div class="step-icon">📊</div>
+          <h3>Get Results</h3>
+          <p>See the verdict — fake or real — with confidence score, highlighted sentences, and a Gemini-powered explanation.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEMO SECTION -->
+  <section class="demo" id="demo">
+    <div class="container">
+      <div class="section-label">Live Demo</div>
+      <h2 class="section-title">Analyze any text</h2>
+      <p class="section-sub">Paste a headline, article, or any content below and click Analyze.</p>
+
+      <div class="demo-layout">
+        <div class="demo-input-col">
+          <div class="input-card">
+            <div class="input-card-header">
+              <span>Input text</span>
+              <button class="clear-btn" id="clearBtn">Clear</button>
+            </div>
+            <textarea id="textInput" placeholder="Paste article text, headline, or any content here...&#10;&#10;Example: 'Scientists reveal shocking secret cure that governments don't want you to know about!!!'"></textarea>
+            <div class="input-footer">
+              <span class="char-count" id="charCount">0 characters</span>
+              <button class="btn-analyze" id="analyzeBtn">
+                <span id="analyzeBtnText">Analyze</span>
+                <div class="spinner" id="spinner"></div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="demo-output-col" id="outputCol">
+          <div class="output-placeholder" id="outputPlaceholder">
+            <div class="placeholder-icon">🔍</div>
+            <p>Results will appear here after analysis</p>
+          </div>
+
+          <div class="output-results" id="outputResults" style="display:none;">
+            <!-- VERDICT CARD -->
+            <div class="result-card verdict-card" id="verdictCard">
+              <div class="verdict-header">
+                <div class="verdict-badge" id="verdictBadge">—</div>
+                <div class="verdict-meta">
+                  <div class="verdict-label">Overall Verdict</div>
+                  <div class="verdict-conf" id="verdictConf">—</div>
+                </div>
+              </div>
+              <div class="conf-bar-wrap">
+                <div class="conf-bar-track">
+                  <div class="conf-bar-fill" id="confBarFill"></div>
+                </div>
+                <span class="conf-pct" id="confPct">0%</span>
+              </div>
+            </div>
+
+            <!-- SUMMARY CARD -->
+            <div class="result-card summary-card" id="summaryCard" style="display:none;">
+              <div class="result-card-title">
+                <span class="card-icon">✨</span> AI Explanation
+              </div>
+              <p class="summary-text" id="summaryText"></p>
+            </div>
+
+            <!-- SENTENCES CARD -->
+            <div class="result-card sentences-card" id="sentencesCard" style="display:none;">
+              <div class="result-card-title">
+                <span class="card-icon">📝</span> Sentence Breakdown
+              </div>
+              <div class="sentences-list" id="sentencesList"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DOWNLOAD SECTION -->
+  <section class="download" id="download">
+    <div class="container">
+      <div class="download-card">
+        <div class="download-left">
+          <div class="section-label light">Chrome Extension</div>
+          <h2 class="download-title">Analyze any page,<br/>instantly.</h2>
+          <p class="download-sub">Install TruthLens as a Chrome extension. Select any text on any webpage and get an instant credibility analysis — no copy-pasting required.</p>
+          <a href="./truthlens-extension.zip" download class="btn-primary">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 15l-4-4h3V4h2v7h3l-4 4zM5 18h14v2H5v-2z" fill="currentColor"/></svg>
+            Download Extension
+          </a>
+        </div>
+        <div class="download-right">
+          <div class="install-steps">
+            <div class="install-title">Installation Steps</div>
+            <div class="install-step">
+              <div class="install-step-num">1</div>
+              <div>
+                <strong>Download the extension</strong>
+                <p>Click the button and extract the ZIP file.</p>
+              </div>
+            </div>
+            <div class="install-step">
+              <div class="install-step-num">2</div>
+              <div>
+                <strong>Open Chrome Extensions</strong>
+                <p>Navigate to <code>chrome://extensions</code></p>
+              </div>
+            </div>
+            <div class="install-step">
+              <div class="install-step-num">3</div>
+              <div>
+                <strong>Enable Developer Mode</strong>
+                <p>Toggle Developer Mode in the top-right corner.</p>
+              </div>
+            </div>
+            <div class="install-step">
+              <div class="install-step-num">4</div>
+              <div>
+                <strong>Load Unpacked</strong>
+                <p>Click "Load Unpacked" and select the extension folder.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-logo">TruthLens 🔍</div>
+        <div class="footer-note">Built with SentenceTransformers, LinearSVC, Flask & ❤️</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
